@@ -4,18 +4,20 @@ import ResultModal from "./ResultModal";
 export default function TimmerChallenge({ title, targetTime }) {
     const timer = useRef()
     const dialog = useRef()
-    const [timerStarted, setTimmerStarted] = useState(false)
-    const [timerExpired, setTimmerExpired] = useState(false)
+    const [timeRemaining, setTimeRemaining] = useState(targetTime * 1000);
+    const timeIsActive = timeRemaining > 0 && timeRemaining < targetTime * 1000;
+    if (timeRemaining <= 0) {
+        clearInterval(timer.current)
+        setTimeRemaining(targetTime * 1000)
+    }
     function handleStart() {
-        timer.current = setTimeout(() => {
-            setTimmerExpired(true)
-            dialog.current.showModal();
-        }, targetTime * 1000);
-        setTimmerStarted(true)
+        timer.current = setInterval(() => {
+            setTimeRemaining(prevTimeRemaing => prevTimeRemaing - 10)
+        }, 10);
     }
 
     function handleStop() {
-        clearTimeout(timer.current)
+        clearInterval(timer.current)
     }
     return (
         <>
@@ -29,9 +31,9 @@ export default function TimmerChallenge({ title, targetTime }) {
                     {targetTime}  {targetTime > 1 ? 'seconds' : 'second'}
                 </p>
                 <p>
-                    <button onClick={timerStarted ? handleStop : handleStart}>{timerStarted ? 'Stop' : 'Start'} Challenge</button>
+                    <button onClick={timeIsActive ? handleStop : handleStart}>{timeIsActive ? 'Stop' : 'Start'} Challenge</button>
                 </p>
-                <p className={timerStarted ? 'active' : undefined}>{timerStarted ? 'Time is running...' : 'Timer inactive'}  </p>
+                <p className={timeIsActive ? 'active' : undefined}>{timeIsActive ? 'Time is running...' : 'Timer inactive'}</p>
             </section>
         </>
 
